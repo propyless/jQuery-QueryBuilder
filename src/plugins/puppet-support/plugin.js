@@ -71,7 +71,6 @@ QueryBuilder.defaults({
             return '[">=","' + field + '","' + v[0] + '"]';
         },
         regex_match: function (v, field) {
-            console.log(v);
             return '["~","' + field + '","' + v[0] + '"]';
         },
         puppet_equal: function (v, subq) {
