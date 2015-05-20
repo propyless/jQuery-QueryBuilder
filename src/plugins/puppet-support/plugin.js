@@ -42,36 +42,36 @@ QueryBuilder.defaults({
     puppetOperators: {
         equal: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["=","' + field + '",' + v[0] + ']';
+                return '["in", "certname",["extract", "certname",["select-nodes",["=","' + field + '",' + v[0] + ']]]]';
             }
-            return '["=","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",["=","' + field + '","' + v[0] + '"]]]]';
         },
         less: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["=","' + field + '",' + v[0] + ']';
+                return '["in", "certname",["extract", "certname",["select-nodes",["<","' + field + '",' + v[0] + ']]]]';
             }
-            return '["<","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",["<","' + field + '","' + v[0] + '"]]]]';
         },
         less_or_equal: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["=","' + field + '",' + v[0] + ']';
+                return '["in", "certname",["extract", "certname",["select-nodes",["<=","' + field + '",' + v[0] + ']]]]';
             }
-            return '["<=","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",["<=","' + field + '","' + v[0] + '"]]]]';
         },
         greater: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["=","' + field + '",' + v[0] + ']';
+                return '["in", "certname",["extract", "certname",["select-nodes",[">","' + field + '",' + v[0] + ']]]]';
             }
-            return '[">","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",[">","' + field + '","' + v[0] + '"]]]]';
         },
         greater_or_equal: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["=","' + field + '",' + v[0] + ']';
+                return '["in", "certname",["extract", "certname",["select-nodes",[">=","' + field + '",' + v[0] + ']]]]';
             }
-            return '[">=","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",[">=","' + field + '","' + v[0] + '"]]]]';
         },
         regex_match: function (v, field) {
-            return '["~","' + field + '","' + v[0] + '"]';
+            return '["in", "certname",["extract", "certname",["select-nodes",["~","' + field + '","' + v[0] + '"]]]]';
         },
         puppet_equal: function (v, subq) {
             if ($.isNumeric(v[1])) {
