@@ -115,6 +115,13 @@ QueryBuilder.defaults({
     }
 });
 
+function query_build(subq) {
+    if ($.isNumeric(v[1])) {
+        return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">=","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+    }
+    return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">=","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+}
+
 function getSearchName(subq) {
     if (subq == 'resources') {
         var puppet_search_name = "type";
@@ -196,72 +203,5 @@ QueryBuilder.extend({
             }
             return res;
         }(data));
-    },
-
-    /**
-     * Convert PuppetDB Query to rules
-     * @param data {object} query object
-     * @return {object}
-     */
-    getRulesFromPuppet: function (data) {
-        if (data === undefined || data === null) {
-            return null;
-        }
-
-        var that = this,
-            conditions = ['$and','$or'];
-
-        return (function parse(data) {
-            var topKeys = Object.keys(data);
-
-            if (topKeys.length > 1) {
-                error('Invalid MongoDB query format.');
-            }
-            if (conditions.indexOf(topKeys[0].toLowerCase()) === -1) {
-                error('Unable to build Rule from MongoDB query with condition "{0}"', topKeys[0]);
-            }
-
-            var condition = topKeys[0].toLowerCase() === conditions[0] ? 'AND' : 'OR',
-                rules = data[topKeys[0]],
-                parts = [];
-
-            rules.forEach(function(rule) {
-                var keys = Object.keys(rule);
-
-                if (conditions.indexOf(keys[0].toLowerCase()) !== -1) {
-                    parts.push(parse(rule));
-                }
-                else {
-                    var field = keys[0],
-                        value = rule[field];
-
-                    var operator = that.determineMongoOperator(value, field);
-                    if (operator === undefined) {
-                        error('Invalid MongoDB query format.');
-                    }
-
-                    var mdbrl = that.settings.mongoRuleOperators[operator];
-                    if (mdbrl === undefined) {
-                        error('JSON Rule operation unknown for operator "{0}"', operator);
-                    }
-
-                    var opVal = mdbrl.call(that, value);
-                    parts.push({
-                        id: that.change('getMongoDBFieldID', field, value),
-                        field: field,
-                        operator: opVal.op,
-                        value: opVal.val
-                    });
-                }
-            });
-
-            var res = {};
-            if (parts.length > 0) {
-                res.condition = condition;
-                res.rules = parts;
-            }
-            return res;
-        }(data));
     }
-
 });
