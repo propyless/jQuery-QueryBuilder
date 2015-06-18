@@ -12,21 +12,21 @@ QueryBuilder.defaults({
         {type: 'equal', nb_inputs: 1, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean']},
         {type: 'regex_match', nb_inputs: 1, multiple: false, apply_to: ['string', 'number']},
         {type: 'regex_array_match', nb_inputs: 1, multiple: false, apply_to: ['string', 'number']},
-        {type: 'puppet_equal', nb_inputs: 2, multiple: true, apply_to: ['string', 'number', 'datetime', 'boolean']},
+        {type: 'puppet_equal', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime', 'boolean']},
         {type: 'not_equal', nb_inputs: 1, multiple: false, apply_to: ['string', 'number', 'datetime', 'boolean']},
         {type: 'in', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime']},
         {type: 'not_in', nb_inputs: 1, multiple: true, apply_to: ['string', 'number', 'datetime']},
         {type: 'less', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
         {type: 'less_or_equal', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-        {type: 'puppet_l', nb_inputs: 2, multiple: true, apply_to: ['number', 'datetime']},
-        {type: 'puppet_le', nb_inputs: 2, multiple: true, apply_to: ['number', 'datetime']},
+        {type: 'puppet_l', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime']},
+        {type: 'puppet_le', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime']},
         {type: 'greater', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
         {type: 'greater_or_equal', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
-        {type: 'puppet_g', nb_inputs: 2, multiple: true, apply_to: ['number', 'datetime']},
-        {type: 'puppet_ge', nb_inputs: 2, multiple: true, apply_to: ['number', 'datetime']},
-        {type: 'puppet_re_match', nb_inputs: 2, multiple: false, apply_to: ['string']},
-        {type: 'puppet_re_amatch', nb_inputs: 2, multiple: false, apply_to: ['string']},
-        {type: 'between', nb_inputs: 2, multiple: false, apply_to: ['number', 'datetime']},
+        {type: 'puppet_g', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime']},
+        {type: 'puppet_ge', nb_inputs: 1, multiple: true, apply_to: ['number', 'datetime']},
+        {type: 'puppet_re_match', nb_inputs: 1, multiple: false, apply_to: ['string']},
+        {type: 'puppet_re_amatch', nb_inputs: 1, multiple: false, apply_to: ['string']},
+        {type: 'between', nb_inputs: 1, multiple: false, apply_to: ['number', 'datetime']},
         {type: 'begins_with', nb_inputs: 1, multiple: false, apply_to: ['string']},
         {type: 'not_begins_with', nb_inputs: 1, multiple: false, apply_to: ['string']},
         {type: 'contains', nb_inputs: 1, multiple: false, apply_to: ['string']},
@@ -75,64 +75,45 @@ QueryBuilder.defaults({
         },
         puppet_equal: function (v, subq) {
             if ($.isNumeric(v[1])) {
-                return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["=","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+                return '["=",' + v[0] + ',"' + v[1] + '"]';
             }
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["=","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '["=",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_l: function (v, subq) {
             if ($.isNumeric(v[1])) {
-                return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["<","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+                return '["<",' + v[0] + ',"' + v[1] + '"]';
             }
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["<","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '["<",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_le: function (v, subq) {
             if ($.isNumeric(v[1])) {
-                return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["<=","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+                return '["<=",' + v[0] + ',"' + v[1] + '"]';
             }
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["<=","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '["<=",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_g: function (v, subq) {
             if ($.isNumeric(v[1])) {
-                return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+                return '[">",' + v[0] + ',"' + v[1] + '"]';
             }
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '[">",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_ge: function (v, subq) {
             if ($.isNumeric(v[1])) {
-                return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">=","' + getValueName(subq) + '",' + v[1] + ']]]]]';
+                return '[">=",' + v[0] + ',"' + v[1] + '"]';
             }
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],[">=","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '[">=",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_re_match: function (v, subq) {
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["~","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '["~",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_re_amatch: function (v, subq) {
-            return '["in","certname",["extract","certname",["select-' + subq + '",["and",["=","' + getSearchName(subq) + '","' + v[0] + '"],["~>","' + getValueName(subq) + '","' + v[1] + '"]]]]]';
+            return '["~>",' + v[0] + ',"' + v[1] + '"]';
         },
         is_null: function (v) {
             return null;
         }
     }
 });
-
-function getSearchName(subq) {
-    if (subq == 'resources') {
-        var puppet_search_name = "type";
-    }
-    else if (subq == 'facts') {
-        var puppet_search_name = "name";
-    }
-    return puppet_search_name;
-}
-function getValueName(subq) {
-    if (subq == 'resources') {
-        var puppet_value_name = "title";
-    }
-    else if (subq == 'facts') {
-        var puppet_value_name = "value";
-    }
-    return puppet_value_name;
-}
 
 
 // PUBLIC METHODS
@@ -160,32 +141,52 @@ QueryBuilder.extend({
             }
 
             var parts = [];
-
+            var sub_queries = [];
             data.rules.forEach(function (rule) {
-                if (rule.rules && rule.rules.length > 0) {
-                    parts.push(parse(rule));
-                }
-                else {
-                    var mdb = that.settings.puppetOperators[rule.operator],
-                        ope = that.getOperatorByType(rule.operator),
-                        values = [];
-
-                    if (mdb === undefined) {
-                        error('Unknown Puppet operation for operator "{0}"', rule.operator);
-                    }
-                    if (ope.nb_inputs !== 0) {
-                        if (!(rule.value instanceof Array)) {
-                            rule.value = [rule.value];
-                        }
-
-                        rule.value.forEach(function (v) {
-                            values.push(changeType(v, rule.type));
-                        });
-                    }
-                    var part = mdb.call(that, values, rule.field);
-                    parts.push(part);
+                if ($.inArray(rule['field'], sub_queries) == -1) {
+                    sub_queries.push(rule['field']);
                 }
             });
+
+            sub_queries.forEach(function (subq) {
+                console.log(subq);
+                var buf = '["in","certname",["extract","certname",["select-' + subq + '",["and",';
+                data.rules.forEach(function (rule) {
+                    if (rule.field == subq) {
+                        if (rule.rules && rule.rules.length > 0) {
+                            parts.push(parse(rule));
+                        }
+                        else {
+                            var mdb = that.settings.puppetOperators[rule.operator],
+                                ope = that.getOperatorByType(rule.operator),
+                                values = [];
+
+                            if (mdb === undefined) {
+                                error('Unknown Puppet operation for operator "{0}"', rule.operator);
+                            }
+                            if (ope.nb_inputs !== 0) {
+                                if (!(rule.value instanceof Array)) {
+                                    rule.value = [rule.value];
+                                }
+
+                                rule.value.forEach(function (v) {
+                                    values.push(changeType(v, rule.type));
+                                });
+                            }
+                            var part = mdb.call(that, values, rule.field);
+                            if (buf.substring(buf.length-1) != ',')
+                            {
+                                buf = buf.concat(',');
+                            }
+                            buf = buf.concat(part);
+                        }
+                    }
+                });
+                buf = buf.concat(']]]]');
+                parts.push(buf);
+                console.log(buf);
+            });
+
             var res = "";
             if (parts.length > 0) {
                 res += '["' + data.condition.toLowerCase() + '"';
@@ -209,23 +210,23 @@ QueryBuilder.extend({
         }
 
         var that = this,
-            conditions = ['$and','$or'];
+            conditions = ['$and', '$or'];
 
         return (function parse(data) {
             var topKeys = Object.keys(data);
 
             if (topKeys.length > 1) {
-                error('Invalid MongoDB query format.');
+                error('Invalid PuppetDB query format.');
             }
             if (conditions.indexOf(topKeys[0].toLowerCase()) === -1) {
-                error('Unable to build Rule from MongoDB query with condition "{0}"', topKeys[0]);
+                error('Unable to build Rule from PuppetDB query with condition "{0}"', topKeys[0]);
             }
 
             var condition = topKeys[0].toLowerCase() === conditions[0] ? 'AND' : 'OR',
                 rules = data[topKeys[0]],
                 parts = [];
 
-            rules.forEach(function(rule) {
+            rules.forEach(function (rule) {
                 var keys = Object.keys(rule);
 
                 if (conditions.indexOf(keys[0].toLowerCase()) !== -1) {
@@ -237,7 +238,7 @@ QueryBuilder.extend({
 
                     var operator = that.determineMongoOperator(value, field);
                     if (operator === undefined) {
-                        error('Invalid MongoDB query format.');
+                        error('Invalid PuppetDB query format.');
                     }
 
                     var mdbrl = that.settings.mongoRuleOperators[operator];
