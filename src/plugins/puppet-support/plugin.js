@@ -42,36 +42,36 @@ QueryBuilder.defaults({
     puppetOperators: {
         equal: function (v, field) {
             if ($.isNumeric(v[0])) {
-                return '["in", "certname",["extract", "certname",["select-nodes",["=","' + field + '",' + v[0] + ']]]]';
+                return '["=",' + v[0] + ',' + v[1] + ']';
             }
-            return '["in", "certname",["extract", "certname",["select-nodes",["=","' + field + '","' + v[0] + '"]]]]';
+            return '["=",' + v[0] + ',"' + v[1] + '"]';
         },
         less: function (v, field) {
-            if ($.isNumeric(v[0])) {
-                return '["in", "certname",["extract", "certname",["select-nodes",["<","' + field + '",' + v[0] + ']]]]';
+            if ($.isNumeric(v[1])) {
+                return '["<",' + v[0] + ',' + v[1] + ']';
             }
-            return '["in", "certname",["extract", "certname",["select-nodes",["<","' + field + '","' + v[0] + '"]]]]';
+            return '["<",' + v[0] + ',"' + v[1] + '"]';
         },
         less_or_equal: function (v, field) {
-            if ($.isNumeric(v[0])) {
-                return '["in", "certname",["extract", "certname",["select-nodes",["<=","' + field + '",' + v[0] + ']]]]';
+            if ($.isNumeric(v[1])) {
+                return '["<=",' + v[0] + ',' + v[1] + ']';
             }
-            return '["in", "certname",["extract", "certname",["select-nodes",["<=","' + field + '","' + v[0] + '"]]]]';
+            return '["<=",' + v[0] + ',"' + v[1] + '"]';
         },
         greater: function (v, field) {
-            if ($.isNumeric(v[0])) {
-                return '["in", "certname",["extract", "certname",["select-nodes",[">","' + field + '",' + v[0] + ']]]]';
+            if ($.isNumeric(v[1])) {
+                return '[">",' + v[0] + ',' + v[1] + ']';
             }
-            return '["in", "certname",["extract", "certname",["select-nodes",[">","' + field + '","' + v[0] + '"]]]]';
+            return '[">",' + v[0] + ',"' + v[1] + '"]';
         },
         greater_or_equal: function (v, field) {
-            if ($.isNumeric(v[0])) {
-                return '["in", "certname",["extract", "certname",["select-nodes",[">=","' + field + '",' + v[0] + ']]]]';
+            if ($.isNumeric(v[1])) {
+                return '[">=",' + v[0] + ',' + v[1] + ']';
             }
-            return '["in", "certname",["extract", "certname",["select-nodes",[">=","' + field + '","' + v[0] + '"]]]]';
+            return '[">=",' + v[0] + ',"' + v[1] + '"]';
         },
         regex_match: function (v, field) {
-            return '["in", "certname",["extract", "certname",["select-nodes",["~","' + field + '","' + v[0] + '"]]]]';
+            return '["~",' + v[0] + ',"' + v[1] + '"]';
         },
         puppet_equal: function (v, subq) {
             if ($.isNumeric(v[1])) {
@@ -142,16 +142,22 @@ QueryBuilder.extend({
 
             var parts = [];
             var sub_queries = [];
+            console.log("------------")
             data.rules.forEach(function (rule) {
-                if ($.inArray(rule['field'], sub_queries) == -1) {
-                    sub_queries.push(rule['field']);
+                var exists = ("field" in rule);
+                if (exists == true) {
+                    console.log(exists);
+                    if ($.inArray(rule['field'], sub_queries) == -1) {
+                        sub_queries.push(rule['field']);
+                    }
                 }
             });
-
+            console.log(sub_queries);
             sub_queries.forEach(function (subq) {
-                console.log(subq);
                 var buf = '["in","certname",["extract","certname",["select-' + subq + '",["and",';
+                console.log(subq);
                 data.rules.forEach(function (rule) {
+                    console.log(rule);
                     if (rule.field == subq) {
                         if (rule.rules && rule.rules.length > 0) {
                             parts.push(parse(rule));
@@ -174,8 +180,7 @@ QueryBuilder.extend({
                                 });
                             }
                             var part = mdb.call(that, values, rule.field);
-                            if (buf.substring(buf.length-1) != ',')
-                            {
+                            if (buf.substring(buf.length - 1) != ',') {
                                 buf = buf.concat(',');
                             }
                             buf = buf.concat(part);
@@ -184,7 +189,6 @@ QueryBuilder.extend({
                 });
                 buf = buf.concat(']]]]');
                 parts.push(buf);
-                console.log(buf);
             });
 
             var res = "";
