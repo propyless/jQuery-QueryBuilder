@@ -142,27 +142,19 @@ QueryBuilder.extend({
 
             var parts = [];
             var sub_queries = [];
-            console.log("------------")
             data.rules.forEach(function (rule) {
-                var exists = ("field" in rule);
-                if (exists == true) {
-                    console.log(exists);
-                    if ($.inArray(rule['field'], sub_queries) == -1) {
-                        sub_queries.push(rule['field']);
-                    }
+                if ($.inArray(rule['field'], sub_queries) == -1) {
+                    sub_queries.push(rule['field']);
                 }
             });
-            console.log(sub_queries);
             sub_queries.forEach(function (subq) {
                 var buf = '["in","certname",["extract","certname",["select-' + subq + '",["and",';
-                console.log(subq);
                 data.rules.forEach(function (rule) {
-                    console.log(rule);
                     if (rule.field == subq) {
                         if (rule.rules && rule.rules.length > 0) {
                             parts.push(parse(rule));
                         }
-                        else {
+                        if (subq) {
                             var mdb = that.settings.puppetOperators[rule.operator],
                                 ope = that.getOperatorByType(rule.operator),
                                 values = [];
@@ -185,10 +177,16 @@ QueryBuilder.extend({
                             }
                             buf = buf.concat(part);
                         }
+                        else if (!(subq)) {
+                            buf = ""
+                        }
                     }
+
                 });
-                buf = buf.concat(']]]]');
-                parts.push(buf);
+                if (buf !== "") {
+                    buf = buf.concat(']]]]');
+                    parts.push(buf);
+                }
             });
 
             var res = "";
@@ -269,4 +267,5 @@ QueryBuilder.extend({
         }(data));
     }
 
-});
+})
+;
